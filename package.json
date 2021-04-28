@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "clear": "(rm -r output/ || true) && (rm -r generated/ || true) && (rm -r lambdas/ || true)",
-    "generate": "((rm -r output/ || true) && typeorm-model-generator -h localhost -d abastctv2 -u postgres -x root -s public -e postgres)",
     "start": "ts-node main.ts",
     "svl-deploy": "ts-node ./deployments/lambda.ts",
     "destroy-stack": "ts-node ./destroy/lambda.ts"
