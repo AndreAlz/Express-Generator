@@ -1,0 +1,13 @@
+[
+  {
+    "name": "default",
+    "type": "postgres",
+    "host": "iprovider-test-instance-1.cwcijcrlxku7.us-east-2.rds.amazonaws.com",
+    "port": 5432,
+    "username": "iprovider",
+    "password": "Pa$$w0rd",
+    "database": "",
+    "synchronize": false,
+    "entities": ["entities/*.js"]
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "name": "generatornode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clear": "(rm -r output/ || true) && (rm -r generated/ || true) && (rm -r lambdas/ || true)",
+    "generate": "((rm -r output/ || true) && typeorm-model-generator -h localhost -d abastctv2 -u postgres -x root -s public -e postgres)",
+    "start": "ts-node main.ts",
+    "svl-deploy": "ts-node ./deployments/lambda.ts",
+    "destroy-stack": "ts-node ./destroy/lambda.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.11",
+    "@types/node": "^14.14.35",
+    "custom-env": "^2.0.1",
+    "dotenv": "^8.2.0",
+    "fs-extra": "^9.1.0",
+    "mv": "^2.1.1",
+    "pg": "^8.5.1",
+    "typeorm-model-generator": "^0.4.5-no-engines",
+    "typescript": "^4.2.3"
+  }
+}

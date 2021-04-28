@@ -1,0 +1,61 @@
+var AWS = require("aws-sdk");
+AWS.config.update({ region: 'us-east-2' });
+var ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-2' });
+exports.handler = async(body, ctx, callback) => {
+    var res = {
+        mensaje: "Funcion ejecutada con exito",
+        status: 200,
+        data: null,
+    }
+    var params = {
+        TableName: 'tabledefinition'
+    };
+    try {
+        switch (body.action) {
+            case "findall":
+                res.data = await ddb.scan(params).promise()
+                break;
+            case "findid":
+                var expressAtributtes = {}
+                expressAtributtes[":id"] = body.payload
+                params.KeyConditionExpression = "id = :id"
+                params.ExpressionAttributeValues = expressAtributtes
+                res.data = await ddb.query(params).promise()
+                break;
+            case "create":
+                params.Item = body.payload
+                res.data = ddb.put(params).promise()
+                break;
+            case "save":
+                params.Key ={
+                    id: body.payload.id,
+                    sorter : body.payload.sorter
+                }
+                params.UpdateExpression= 'set nombre = :nombre'
+                params.ExpressionAttributeValues = {
+                    ":nombre": body.payload.nombre
+                }
+                res.data = ddb.update(params).promise()
+                break;
+            case "delete":
+                params.Key ={
+                    id: body.payload.id,
+                    sorter : body.payload.sorter
+                }
+                res.data = await ddb.delete(params).promise()
+                break;
+            default:
+                res.mensaje = "Acction property is not present";
+                break;
+        }
+    }
+    catch (e) {
+        res.mensaje = "Error al ejecutar esta accion.";
+        res.msgError = e.message;
+        res.status = 500;
+        res.data = null;
+    }
+
+    return res;
+
+};
