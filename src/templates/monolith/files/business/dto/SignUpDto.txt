@@ -1,0 +1,82 @@
+export class SignUpDto {
+  private _nombre: string;
+  private _email: string;
+  private _password: string;
+  private _roles: Array<String>;
+
+  constructor(
+    nombre: string,
+    email: string,
+    password: string,
+    roles: Array<String>,
+  ) {
+    this._nombre = nombre;
+    this._email = email;
+    this._password = password;
+    this._roles = roles;
+  }
+
+  /**
+   * Getter nombre
+   * @return {string}
+   */
+  public get nombre(): string {
+    return this._nombre;
+  }
+
+  /**
+   * Getter email
+   * @return {string}
+   */
+  public get email(): string {
+    return this._email;
+  }
+
+  /**
+   * Getter password
+   * @return {string}
+   */
+  public get password(): string {
+    return this._password;
+  }
+
+  /**
+   * Getter roles
+   * @return {Array<String>}
+   */
+  public get roles(): Array<String> {
+    return this._roles;
+  }
+
+  /**
+   * Setter nombre
+   * @param {string} value
+   */
+  public set nombre(value: string) {
+    this._nombre = value;
+  }
+
+  /**
+   * Setter email
+   * @param {string} value
+   */
+  public set email(value: string) {
+    this._email = value;
+  }
+
+  /**
+   * Setter password
+   * @param {string} value
+   */
+  public set password(value: string) {
+    this._password = value;
+  }
+
+  /**
+   * Setter roles
+   * @param {Array<String>} value
+   */
+  public set roles(value: Array<String>) {
+    this._roles = value;
+  }
+}

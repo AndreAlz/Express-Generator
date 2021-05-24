@@ -1,0 +1,86 @@
+import { getCustomRepository } from "typeorm";
+import { %ENTITY_NAME%Repository } from "../repository/%ENTITY_NAME%Repository";
+import { %ENTITY_NAME% } from "../entity/%ENTITY_NAME%";
+import { v4 as uuidv4 } from "uuid";
+
+export class %ENTITY_NAME%Service {
+  repository = getCustomRepository(%ENTITY_NAME%Repository);
+
+  async findall() {
+    try {
+      return await this.repository.find(%FILTER_FIND_OPTION%);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async find(filter: any) {
+    try {
+      return await this.repository.find(filter);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async create(bean: %ENTITY_NAME%, em?) {
+    try {
+      %GENERATION_ID_UUID%
+       if (em) {
+        return await em.save(bean);
+      } else {
+        return await this.repository.save(bean);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async createall(beanarr: Array<%ENTITY_NAME%>, em?) {
+    try {
+      for(let i = 0; i < beanarr.length; i++){
+        let bean = beanarr[i]
+        %GENERATION_ID_UUID%
+        beanarr[i] = bean;
+      }
+       if (em) {
+        return await em.save(beanarr);
+      } else {
+        return await this.repository.save(beanarr);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async save(bean: %ENTITY_NAME% , em?) {
+    try {
+      if (em) {
+        return await em.save(bean);
+      } else {
+        return await this.repository.save(bean);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+   async saveall(beanarr: Array<%ENTITY_NAME%> , em?) {
+    try {     
+       if (em) {
+        return await em.save(beanarr);
+      } else {
+        return await this.repository.save(beanarr);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async delete(id: string) {
+    try {
+      return await this.repository.delete(id);
+    } catch (e) {
+      throw e;
+    }
+  }
+}

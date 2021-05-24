@@ -1,0 +1,22 @@
+import { Request, Response } from "express";
+import enviromentConfig from "../config";
+const loggerMiddleware = (req: Request, res: Response, next) => {
+  var mensaje: string;
+  switch (enviromentConfig.activeprofile) {
+    case "local":
+      mensaje = `Request logged: || method: ${req.method} || path: ${
+        req.path
+      } || server time: ${new Date()} `;
+      console.log(mensaje);
+      break;
+    case "dev":
+      mensaje = `Request logged: || method: ${req.method} || path: ${
+        req.path
+      } || server time: ${new Date()} `;
+      console.log(mensaje);
+      break;
+  }
+  next();
+};
+
+export default loggerMiddleware;

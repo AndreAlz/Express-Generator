@@ -1,0 +1,70 @@
+import { Request, Response } from "express";
+import enviromentConfig from "../config";
+import { SecurityPaths } from "../securitypath";
+const jwt = require("jsonwebtoken");
+const config = enviromentConfig[enviromentConfig.activeprofile];
+
+const pathSecureValidatorMiddleware = (req: Request, res: Response, next) => {
+  if (config.security.active) {
+    let path = SecurityPaths[req.path];
+    if (path) {
+      if (path.length > 0) {
+        req.body.pathSecure = true;
+      }
+    }
+    next();
+  } else {
+    next();
+  }
+};
+
+const tokenValidatorMiddleware = (req: Request, res: Response, next) => {
+  if (config.security.active && req.body.pathSecure) {
+    let token = req.headers["x-access-token"];
+    if (!token) return res.status(401).json({ message: "Unauthorized." });
+    try {
+      let securityData = jwt.verify(token, config.security.secret);
+      req.body.securityData = securityData;
+      console.log(securityData);
+      next();
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ message: "Security Error." });
+    }
+  } else {
+    next();
+  }
+};
+
+const roleValidatorMiddleware = (req: Request, res: Response, next) => {
+  if (config.security.active && req.body.pathSecure) {
+    try {
+      let roles = req.body.securityData._roles;
+      let path = SecurityPaths[req.path];
+      if (path) {
+        var flag = false;
+        for (var i = 0; i < roles.length; i++) {
+          if (path.includes(roles[i].nombre)) {
+            flag = true;
+            next();
+            return;
+          }
+        }
+        if (!flag) return res.status(401).json({ message: "Unauthorized." });
+      } else {
+        next();
+      }
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ message: "Security Error." });
+    }
+  } else {
+    next();
+  }
+};
+
+export default {
+  pathSecureValidatorMiddleware,
+  tokenValidatorMiddleware,
+  roleValidatorMiddleware,
+};

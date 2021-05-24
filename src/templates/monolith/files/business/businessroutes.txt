@@ -1,0 +1,3 @@
+import SecurityRest from "./security/SecurityRest";
+
+export const BUSINESS_ROUTES = [SecurityRest];
