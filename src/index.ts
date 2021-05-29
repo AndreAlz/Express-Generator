@@ -144,7 +144,7 @@ const main = async () => {
         new CopyTemplateDto(
           `${baseTemplates}/App.txt`,
           `./${enviromentConfig.generator.proyectName}/src`,
-          "App",
+          "app",
           "ts",
         ),
         new CopyTemplateDto(
