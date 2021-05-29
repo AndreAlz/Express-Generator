@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clear": "ts-node src/clear.ts",
     "start": "ts-node src/index.ts"
   },
   "repository": {

@@ -13,10 +13,46 @@ import { monolithWD } from "./templates/monolith/workspace/workdirectories";
 import { ModelGeneratorDto } from "./utilities/dto/ModelGeneratorDto";
 import { TemplateDto } from "./utilities/dto/TemplateConfigDto";
 import { CopyTemplateDto } from "./utilities/dto/CopyTemplateDto";
-
+import { listAddColumns } from "./utilities/migration.manager";
 var enviroment = enviromentConfig[enviromentConfig.activeprofile];
 
 const main = async () => {
+  if (enviromentConfig.generator.audit.active) {
+    /* CONECTAR A LA BASE DE DATOS */
+    var configuration = enviroment.dbconfig;
+    delete configuration.entities;
+    let conn = await getConnection(configuration);
+    /*CREAMOS EL QUERY BUILDER PARA EXTRAER LAS TABLAS */
+    let queryRunner = conn.createQueryRunner();
+    let queryTables = `select table_name from information_schema.tables where table_schema = '${configuration.schema}'`;
+    let tablesNames = await conn.query(queryTables);
+    let tables = tablesNames.map((t) => {
+      return t.table_name;
+    });
+    let tableObjects = await queryRunner.getTables(tables);
+    for (var i = 0; i < tableObjects.length; i++) {
+      //Encontramos las lista de columns de auditoria que no estan creadas
+      var t = tableObjects[i];
+      var arrAddColumns = [];
+
+      var createColumns = await listAddColumns(
+        queryRunner,
+        enviromentConfig.generator.audit.createColumns,
+        t,
+      );
+      var updateColumns = await listAddColumns(
+        queryRunner,
+        enviromentConfig.generator.audit.updateColumns,
+        t,
+      );
+      arrAddColumns = arrAddColumns.concat(updateColumns).concat(createColumns);
+      if (arrAddColumns.length > 0) {
+        //Registramos las tablas de auditoria
+        await queryRunner.addColumns(t, arrAddColumns);
+      }
+    }
+    conn.close();
+  }
   if (enviromentConfig.generator.monolith.active) {
     /* CRAER LOS DIRECTORIOS */
     creatorDirectories(monolithWD);
@@ -222,7 +258,6 @@ const main = async () => {
       ];
       copyTemplate(utilFilesArr);
     }
-    console.log(securityPath);
     creatoServer(
       `${baseTemplates}/server.txt`,
       `./${enviromentConfig.generator.proyectName}/src`,
@@ -243,4 +278,5 @@ const main = async () => {
     //TODO
   }
 };
+
 main();

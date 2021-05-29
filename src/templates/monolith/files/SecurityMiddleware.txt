@@ -25,7 +25,6 @@ const tokenValidatorMiddleware = (req: Request, res: Response, next) => {
     try {
       let securityData = jwt.verify(token, config.security.secret);
       req.body.securityData = securityData;
-      console.log(securityData);
       next();
     } catch (e) {
       console.log(e);
