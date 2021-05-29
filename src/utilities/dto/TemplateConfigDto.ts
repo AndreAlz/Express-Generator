@@ -1,5 +1,5 @@
 export class TemplateDto {
-  private _nameCode: string;
+  private _nameCode: RegExp;
   private _value: string;
   private _isPrimary: Boolean;
   private _type: string | null;
@@ -7,7 +7,7 @@ export class TemplateDto {
   private _isRelation: Boolean;
 
   constructor(
-    nameCode: string,
+    nameCode: RegExp,
     value: string,
     isPrimary: Boolean,
     type: string,
@@ -24,9 +24,9 @@ export class TemplateDto {
 
   /**
    * Getter nameCode
-   * @return {string}
+   * @return {RegExp}
    */
-  public get nameCode(): string {
+  public get nameCode(): RegExp {
     return this._nameCode;
   }
 
@@ -72,9 +72,9 @@ export class TemplateDto {
 
   /**
    * Setter nameCode
-   * @param {string} value
+   * @param {RegExp} value
    */
-  public set nameCode(value: string) {
+  public set nameCode(value: RegExp) {
     this._nameCode = value;
   }
 

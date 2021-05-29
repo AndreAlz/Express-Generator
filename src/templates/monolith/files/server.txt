@@ -28,7 +28,6 @@ createConnection(config.dbconfig)
     BUSINESS_ROUTES.forEach((r) => {
       rest.push(new r());
     });
-    console.log(rest.length);
     const app = new App({
       port: parseInt(process.env.PORT) || 5000,
       controllers: rest,

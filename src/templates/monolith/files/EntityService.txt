@@ -24,6 +24,7 @@ export class %ENTITY_NAME%Service {
 
   async create(bean: %ENTITY_NAME%, em?) {
     try {
+      %CREATE_FIELDS%
       %GENERATION_ID_UUID%
        if (em) {
         return await em.save(bean);
@@ -40,6 +41,7 @@ export class %ENTITY_NAME%Service {
       for(let i = 0; i < beanarr.length; i++){
         let bean = beanarr[i]
         %GENERATION_ID_UUID%
+        %CREATE_FIELDS%
         beanarr[i] = bean;
       }
        if (em) {
@@ -53,6 +55,7 @@ export class %ENTITY_NAME%Service {
   }
 
   async save(bean: %ENTITY_NAME% , em?) {
+    %UPDATE_FIELDS%
     try {
       if (em) {
         return await em.save(bean);
@@ -66,6 +69,11 @@ export class %ENTITY_NAME%Service {
 
    async saveall(beanarr: Array<%ENTITY_NAME%> , em?) {
     try {     
+      for(let i = 0; i < beanarr.length; i++){
+        let bean = beanarr[i]
+        %UPDATE_FIELDS%
+        beanarr[i] = bean;
+      }
        if (em) {
         return await em.save(beanarr);
       } else {
