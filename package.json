@@ -6,7 +6,10 @@
   "scripts": {
     "clear": "ts-node src/clear.ts",
     "start": "ts-node src/index.ts",
-    "deploy": "ts-node src/deploy.ts"
+    "genBusiness": "ts-node src/generateBusiness.ts",
+    "deployLambda": "ts-node src/deployLambda.ts",
+    "deployLBusiness": "ts-node src/deployLBusiness.ts",
+    "destroy": "ts-node src/destroy.ts"
   },
   "repository": {
     "type": "git",

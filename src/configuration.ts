@@ -72,11 +72,11 @@ const enviromentConfig = {
     lambda: {
       memorySize: "250",
       timeout: "250",
-      layerArn: "arn:aws:lambda:us-east-2:432499991508:layer:demogenerador",
+      layerArn: "arn:aws:lambda:us-east-2:432499991508:layer:Demolayer",
       layerVersion: "2",
       roleArn: "arn:aws:iam::432499991508:role/lambda_role",
       apigatewayCrud: {
-        id: "npgabdzk05",
+        id: "21vpjcz7h6",
         name: "demoapi",
         createdDate: "2021-08-05T13:41:23-05:00",
         apiKeySource: "HEADER",
@@ -84,9 +84,9 @@ const enviromentConfig = {
           types: ["REGIONAL"],
         },
       },
-      apigatewayCrudRoot: "8lhmq60rm4",
+      apigatewayCrudRoot: "4ympqgfqmh",
       apigatewayBusiness: {
-        id: "s4canuyh9l",
+        id: "illqieefq7",
         name: "demoapibusiness",
         createdDate: "2021-08-05T16:16:21-05:00",
         apiKeySource: "HEADER",
@@ -94,7 +94,7 @@ const enviromentConfig = {
           types: ["REGIONAL"],
         },
       },
-      apigatewayRootBusiness: "7q28539rxl",
+      apigatewayRootBusiness: "h6hwfd2qwd",
     },
   },
 };

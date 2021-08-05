@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts --exec ts-node"
+    "dev": "nodemon src/server.ts --exec ts-node",
+    "clear": "(rm -r dist/ || true)",
+    "build": "tsc -p .",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
