@@ -39,6 +39,7 @@ const enviromentConfig = {
       active: true,
       rounds: 10,
       secret: "^m*A$X;Kc*bgs~6ju_p_%-qm>};7kg",
+      expiresIn: 86400,
     },
   },
 };

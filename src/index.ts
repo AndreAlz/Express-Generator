@@ -7,6 +7,8 @@ import {
   copyTemplate,
   creatoServer,
   creatorSecurityPath,
+  creatorExporterTemplate,
+  creatorLambdas,
 } from "./utilities/files.manager";
 import { getConnection } from "./utilities/database.manager";
 import { monolithWD } from "./templates/monolith/workspace/workdirectories";
@@ -94,7 +96,8 @@ const main = async () => {
       }
     });
     let baseTemplates = "./src/templates/monolith/files";
-
+    let importer = "";
+    let exporter = "";
     for (let i = 0; i < files.length; i++) {
       let entity: string = files[i].split(".ts")[0];
       /* PREPARAMOS IMPORTS DEL LOS REST */
@@ -306,7 +309,22 @@ const main = async () => {
         ),
       ];
       copyTemplate(utilFilesArr);
+      //GENERATE IMPORTS AND EXPORTS
+      importer =
+        importer +
+        `import { ${entity}Repository } from "./repository/${entity}Repository";\n
+         import { ${entity}Service } from "./service/${entity}Service";\n`;
+      exporter =
+        exporter +
+        `${entity}Repository: ${entity}Repository, \n
+        ${entity}Service:${entity}Service,`;
     }
+    let exporterTemplate = creatorExporterTemplate(
+      `${baseTemplates}/exporter.txt`,
+      importer,
+      exporter,
+      `./${enviromentConfig.generator.proyectName}/src`,
+    );
     creatoServer(
       `${baseTemplates}/server.txt`,
       `./${enviromentConfig.generator.proyectName}/src`,
@@ -324,7 +342,22 @@ const main = async () => {
   }
 
   if (enviromentConfig.generator.lambda.active) {
-    //TODO
+    //GENERATE LAMBDAS
+    let baseTemplates = "./src/templates/lambda/files";
+    /* GENERAR LOS MODELOS */
+    let entityPath: string = `./${enviromentConfig.generator.proyectName}/src/entity`;
+    let files: Array<string> = readFolderContent(entityPath);
+    var configuration = enviroment.dbconfig;
+    configuration.entities = ["/opt/dist/entity/**/*.js"];
+    for (let i = 0; i < files.length; i++) {
+      let entity: string = files[i].split(".ts")[0];
+      creatorLambdas(
+        `${baseTemplates}/index.txt`,
+        `./${enviromentConfig.generator.proyectName}_lambdas`,
+        entity,
+        configuration,
+      );
+    }
   }
 };
 

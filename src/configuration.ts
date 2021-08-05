@@ -3,8 +3,7 @@ import { executeCMD } from "./utilities/command.exec";
 const enviromentConfig = {
   activeprofile: "local",
   generator: {
-    proyectName: "local_project",
-    prefix: "local_project",
+    proyectName: "demo",
     audit: {
       active: false,
       updateColumns: [
@@ -40,10 +39,12 @@ const enviromentConfig = {
       security: true,
       roles: ["ADMIN", "SYS_ADMIN"],
     },
-    lambda: { active: false },
+    lambda: {
+      active: true,
+    },
     commnads: {
       models: (params: ModelGeneratorDto): Promise<any> => {
-        var cmd = `((rm -r models/ || true) && typeorm-model-generator -o './models' -h ${params.host} -h ${params.port} -d ${params.db} -u ${params.user} -x ${params.password} -s ${params.schema} -e ${params.type})`;
+        var cmd = `((rm -r models/ || true) && typeorm-model-generator -o './models' -h ${params.host} -p ${params.port} -d ${params.db} -u ${params.user} -x ${params.password} -s ${params.schema} -e ${params.type})`;
         return executeCMD(cmd);
       },
     },
@@ -51,22 +52,49 @@ const enviromentConfig = {
   local: {
     dbconfig: {
       type: "postgres",
-      host: "localhost",
+      host: "iprovider-test-instance-1.cwcijcrlxku7.us-east-2.rds.amazonaws.com",
       schema: "public",
       synchronize: false,
       port: 5432,
-      username: "postgres",
-      password: "root",
-      database: "postgres",
+      username: "iprovider",
+      password: "Pa$$w0rd",
+      database: "iprovider_dev",
       encrypt: true,
       connectTimeoutMS: 60000,
       entities: ["src/entity/**/*.ts"],
     },
     security: {
-      active: true,
+      active: false,
       rounds: 2,
       secret: "secrete",
       expiresIn: 86400,
+    },
+    lambda: {
+      memorySize: "250",
+      timeout: "250",
+      layerArn: "arn:aws:lambda:us-east-2:432499991508:layer:demogenerador",
+      layerVersion: "2",
+      roleArn: "arn:aws:iam::432499991508:role/lambda_role",
+      apigatewayCrud: {
+        id: "npgabdzk05",
+        name: "demoapi",
+        createdDate: "2021-08-05T13:41:23-05:00",
+        apiKeySource: "HEADER",
+        endpointConfiguration: {
+          types: ["REGIONAL"],
+        },
+      },
+      apigatewayCrudRoot: "8lhmq60rm4",
+      apigatewayBusiness: {
+        id: "s4canuyh9l",
+        name: "demoapibusiness",
+        createdDate: "2021-08-05T16:16:21-05:00",
+        apiKeySource: "HEADER",
+        endpointConfiguration: {
+          types: ["REGIONAL"],
+        },
+      },
+      apigatewayRootBusiness: "7q28539rxl",
     },
   },
 };

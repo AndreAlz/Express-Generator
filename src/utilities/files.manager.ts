@@ -44,6 +44,34 @@ export const creatorSecurityPath = (
   fs.writeFileSync(`${targetPath}/${name}.ts`, template);
 };
 
+export const creatorExporterTemplate = (
+  templatePath: string,
+  imports: string,
+  exports: string,
+  targetPath: string,
+) => {
+  var templateExporter = fs.readFileSync(templatePath, "utf8").toString();
+  templateExporter = templateExporter.replace(/importsRepoService/g, imports);
+  templateExporter = templateExporter.replace(/exporterRepoService/g, exports);
+  fs.writeFileSync(`${targetPath}/index.ts`, templateExporter);
+};
+
+export const creatorLambdas = (
+  templateLambdaPath,
+  targetPath,
+  entity,
+  json,
+) => {
+  if (!fs.existsSync(targetPath)) {
+    fs.mkdirSync(targetPath);
+  }
+  fs.mkdirSync(`${targetPath}/${entity}Func`);
+  let templateLambda = fs.readFileSync(templateLambdaPath, "utf8");
+  var tmp = templateLambda.replace(/dbConfigJson/g, JSON.stringify(json));
+  tmp = tmp.replace(/entityname/g, entity);
+  fs.writeFileSync(`${targetPath}/${entity}Func/index.js`, tmp);
+};
+
 export const creatorTemplate = (
   templatePath: string,
   targetPath: string,
