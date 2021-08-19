@@ -3,9 +3,9 @@ import { executeCMD } from "./utilities/command.exec";
 const enviromentConfig = {
   activeprofile: "local",
   generator: {
-    proyectName: "demo",
+    proyectName: "<PROYECT_NAME>",
     audit: {
-      active: false,
+      active: true,
       updateColumns: [
         {
           columnName: "usuario_actualizador",
@@ -52,13 +52,13 @@ const enviromentConfig = {
   local: {
     dbconfig: {
       type: "postgres",
-      host: "iprovider-test-instance-1.cwcijcrlxku7.us-east-2.rds.amazonaws.com",
-      schema: "public",
+      host: "<HOST>",
+      schema: "<SHEMA>",
       synchronize: false,
-      port: 5432,
-      username: "iprovider",
-      password: "Pa$$w0rd",
-      database: "iprovider_dev",
+      port: 1000,
+      username: "<USERNAME>",
+      password: "<PW>",
+      database: "<DATABASE>",
       encrypt: true,
       connectTimeoutMS: 60000,
       entities: ["src/entity/**/*.ts"],
@@ -72,29 +72,13 @@ const enviromentConfig = {
     lambda: {
       memorySize: "250",
       timeout: "250",
-      layerArn: "arn:aws:lambda:us-east-2:432499991508:layer:Demolayer",
-      layerVersion: "2",
-      roleArn: "arn:aws:iam::432499991508:role/lambda_role",
-      apigatewayCrud: {
-        id: "21vpjcz7h6",
-        name: "demoapi",
-        createdDate: "2021-08-05T13:41:23-05:00",
-        apiKeySource: "HEADER",
-        endpointConfiguration: {
-          types: ["REGIONAL"],
-        },
-      },
-      apigatewayCrudRoot: "4ympqgfqmh",
-      apigatewayBusiness: {
-        id: "illqieefq7",
-        name: "demoapibusiness",
-        createdDate: "2021-08-05T16:16:21-05:00",
-        apiKeySource: "HEADER",
-        endpointConfiguration: {
-          types: ["REGIONAL"],
-        },
-      },
-      apigatewayRootBusiness: "h6hwfd2qwd",
+      layerArn: "<LAYER ARN>",
+      layerVersion: "<LAYER VERSION>",
+      roleArn: "<ROLE ARN>",
+      apigatewayCrud: "<API GW CRUD JSON>",
+      apigatewayCrudRoot: "<API GW ROOT ID>",
+      apigatewayBusiness: "<API GW BUSINESS JSON>",
+      apigatewayRootBusiness: "<API GW ROOT ID>",
     },
   },
 };
