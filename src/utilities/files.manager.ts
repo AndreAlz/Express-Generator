@@ -1,4 +1,3 @@
-import { stringify } from "querystring";
 import { CopyTemplateDto } from "./dto/CopyTemplateDto";
 import { TemplateDto } from "./dto/TemplateConfigDto";
 
@@ -15,8 +14,12 @@ export const creatorDirectories = (folders: Array<string>): void => {
 
 export const copyTemplate = (fileList: Array<CopyTemplateDto>) => {
   fileList.forEach((f) => {
-    let template = fs.readFileSync(f.path, "utf8");
-    fs.writeFileSync(`${f.target}/${f.name}.${f.ext}`, template);
+    if (f != null) {
+      let template = fs.readFileSync(f.path, "utf8");
+      if (!fs.existsSync(`${f.target}/${f.name}.${f.ext}`)) {
+        fs.writeFileSync(`${f.target}/${f.name}.${f.ext}`, template);
+      }
+    }
   });
 };
 

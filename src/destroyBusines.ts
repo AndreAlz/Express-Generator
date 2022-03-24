@@ -2,7 +2,12 @@ import { executeCMD } from "./utilities/command.exec";
 import enviromentConfig from "./configuration";
 var fs = require("fs");
 var fse = require("fs-extra");
-var enviroment = enviromentConfig[enviromentConfig.activeprofile];
+let argv = require("minimist")(process.argv.slice(2));
+let profile = "dev";
+if (argv.env) {
+  profile = argv.env;
+}
+var enviroment = enviromentConfig[profile];
 
 var deleteStackLambda = () => {
   var pathFunctionsFiles = `./${enviromentConfig.generator.proyectName}_lambda_business`;
@@ -16,7 +21,7 @@ var deleteStackLambda = () => {
     var resources: any = await executeCMD(getResources);
     var AGresources = JSON.parse(resources.stdout);
     files.forEach(async (file) => {
-      var funcName = `${enviromentConfig.generator.proyectName}Business_${file}`;
+      var funcName = `${enviromentConfig.generator.proyectName}_${profile}_Business_${file}`;
       var deleteFunc = `aws lambda delete-function --function-name ${funcName}`;
       await executeCMD(deleteFunc);
     });
@@ -28,4 +33,9 @@ var deleteStackLambda = () => {
     });
   });
 };
-deleteStackLambda();
+
+if (enviroment) {
+  deleteStackLambda();
+} else {
+  console.error(`No profile found: ${profile}`);
+}

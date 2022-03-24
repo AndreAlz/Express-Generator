@@ -2,13 +2,13 @@ export class SignUpDto {
   private _nombre: string;
   private _email: string;
   private _password: string;
-  private _roles: Array<String>;
+  private _roles: Array<any>;
 
   constructor(
     nombre: string,
     email: string,
     password: string,
-    roles: Array<String>,
+    roles: Array<any>,
   ) {
     this._nombre = nombre;
     this._email = email;
@@ -42,9 +42,9 @@ export class SignUpDto {
 
   /**
    * Getter roles
-   * @return {Array<String>}
+   * @return {Array<any>}
    */
-  public get roles(): Array<String> {
+  public get roles(): Array<any> {
     return this._roles;
   }
 
@@ -74,9 +74,9 @@ export class SignUpDto {
 
   /**
    * Setter roles
-   * @param {Array<String>} value
+   * @param {Array<any>} value
    */
-  public set roles(value: Array<String>) {
+  public set roles(value: Array<any>) {
     this._roles = value;
   }
 }

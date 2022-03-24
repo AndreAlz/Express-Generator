@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "aws": "ts-node src/cloudformation/generation.ts",
+    "build": "ts-node src/main.ts",
     "clear": "ts-node src/clear.ts",
     "start": "ts-node src/index.ts",
     "genBusiness": "ts-node src/generateBusiness.ts",
+    "deployLayer": "ts-node src/deployLayer.ts",
     "deployLambda": "ts-node src/deployLambda.ts",
     "deployLBusiness": "ts-node src/deployLBusiness.ts",
-    "destroy": "ts-node src/destroy.ts"
+    "destroyLambda": "ts-node src/destroyLambda.ts",
+    "destroyLBusiness": "ts-node src/destroyBusines.ts"
   },
   "repository": {
     "type": "git",
@@ -25,9 +29,11 @@
     "@types/express": "^4.17.11",
     "@types/node": "^14.14.35",
     "fs-extra": "^10.0.0",
+    "minimist": "^1.2.5",
     "mv": "^2.1.1",
     "pg": "^8.5.1",
     "typeorm-model-generator": "^0.4.5-no-engines",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "uuid": "^3.4.0"
   }
 }

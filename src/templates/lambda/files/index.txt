@@ -2,6 +2,7 @@ const typeorm = require("/opt/node_modules/typeorm");
 const common = require("/opt/dist/index.js");
 
 var databaseconfig = dbConfigJson;
+
 exports.handler = async (body, ctx, callback) => {
   var conn = await typeorm.createConnection(databaseconfig);
   var repo = typeorm.getCustomRepository(common.entitynameRepository)

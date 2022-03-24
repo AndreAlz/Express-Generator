@@ -3,6 +3,7 @@ import enviromentConfig from "./config";
 
 import * as bodyParser from "body-parser";
 import loggerMiddleware from "./middleware/logger";
+import securityMiddleware from "./middleware/security";
 
 import "reflect-metadata";
 import { createConnection } from "typeorm";
@@ -39,7 +40,10 @@ createConnection(config.dbconfig)
       middleWares: [
         bodyParser.json(),
         bodyParser.urlencoded({ extended: true }),
-        loggerMiddleware
+        loggerMiddleware,
+        securityMiddleware.pathSecureValidatorMiddleware,
+        securityMiddleware.tokenValidatorMiddleware,
+        securityMiddleware.roleValidatorMiddleware,
       ],
       jobs: [],
     });

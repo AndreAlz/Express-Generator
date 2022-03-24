@@ -2,7 +2,13 @@ import { executeCMD } from "./utilities/command.exec";
 import enviromentConfig from "./configuration";
 var fs = require("fs");
 var fse = require("fs-extra");
-var enviroment = enviromentConfig[enviromentConfig.activeprofile];
+let argv = require("minimist")(process.argv.slice(2));
+let profile = "dev";
+if (argv.env) {
+  profile = argv.env;
+}
+var enviroment = enviromentConfig[profile];
+
 const deployBusiness = () => {
   if (enviromentConfig.generator.lambda.active) {
     var pathFunctionsFiles = `./${enviromentConfig.generator.proyectName}/src/business/service`;
@@ -87,4 +93,10 @@ const deployBusiness = () => {
     });
   }
 };
-deployBusiness();
+export default deployBusiness;
+
+if (enviroment) {
+  deployBusiness();
+} else {
+  console.error(`No profile found: ${profile}`);
+}

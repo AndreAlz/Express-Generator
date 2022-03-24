@@ -16,46 +16,57 @@ import { ModelGeneratorDto } from "./utilities/dto/ModelGeneratorDto";
 import { TemplateDto } from "./utilities/dto/TemplateConfigDto";
 import { CopyTemplateDto } from "./utilities/dto/CopyTemplateDto";
 import { listAddColumns } from "./utilities/migration.manager";
-var enviroment = enviromentConfig[enviromentConfig.activeprofile];
+let argv = require("minimist")(process.argv.slice(2));
+let profile = "dev";
+if (argv.env) {
+  profile = argv.env;
+}
+var env = enviromentConfig[profile];
 
-const main = async () => {
-  if (enviromentConfig.generator.audit.active) {
-    /* CONECTAR A LA BASE DE DATOS */
-    var configuration = enviroment.dbconfig;
-    delete configuration.entities;
-    let conn = await getConnection(configuration);
-    /*CREAMOS EL QUERY BUILDER PARA EXTRAER LAS TABLAS */
-    let queryRunner = conn.createQueryRunner();
-    let queryTables = `select table_name from information_schema.tables where table_schema = '${configuration.schema}'`;
-    let tablesNames = await conn.query(queryTables);
-    let tables = tablesNames.map((t) => {
-      return t.table_name;
-    });
-    let tableObjects = await queryRunner.getTables(tables);
-    for (var i = 0; i < tableObjects.length; i++) {
-      //Encontramos las lista de columns de auditoria que no estan creadas
-      var t = tableObjects[i];
-      var arrAddColumns = [];
+const main = async (enviroment?: any) => {
+  // if (env) {
+  //   enviroment = env;
+  // }
+  if (enviroment) {
+    if (enviromentConfig.generator.monolith.audit) {
+      /* CONECTAR A LA BASE DE DATOS */
+      var configuration = enviroment.dbconfig;
+      delete configuration.entities;
+      let conn = await getConnection(configuration);
+      /*CREAMOS EL QUERY BUILDER PARA EXTRAER LAS TABLAS */
+      let queryRunner = conn.createQueryRunner();
+      let queryTables = `select table_name from information_schema.tables where table_schema = '${configuration.schema}'`;
+      let tablesNames = await conn.query(queryTables);
+      let tables = tablesNames.map((t) => {
+        return t.table_name;
+      });
+      let tableObjects = await queryRunner.getTables(tables);
+      for (var i = 0; i < tableObjects.length; i++) {
+        //Encontramos las lista de columns de auditoria que no estan creadas
+        var t = tableObjects[i];
+        var arrAddColumns = [];
 
-      var createColumns = await listAddColumns(
-        queryRunner,
-        enviromentConfig.generator.audit.createColumns,
-        t,
-      );
-      var updateColumns = await listAddColumns(
-        queryRunner,
-        enviromentConfig.generator.audit.updateColumns,
-        t,
-      );
-      arrAddColumns = arrAddColumns.concat(updateColumns).concat(createColumns);
-      if (arrAddColumns.length > 0) {
-        //Registramos las tablas de auditoria
-        await queryRunner.addColumns(t, arrAddColumns);
+        var createColumns = await listAddColumns(
+          queryRunner,
+          enviromentConfig.generator.audit.createColumns,
+          t,
+        );
+        var updateColumns = await listAddColumns(
+          queryRunner,
+          enviromentConfig.generator.audit.updateColumns,
+          t,
+        );
+        arrAddColumns = arrAddColumns
+          .concat(updateColumns)
+          .concat(createColumns);
+        if (arrAddColumns.length > 0) {
+          //Registramos las tablas de auditoria
+          await queryRunner.addColumns(t, arrAddColumns);
+        }
       }
+      conn.close();
     }
-    conn.close();
-  }
-  if (enviromentConfig.generator.monolith.active) {
+    //if (enviromentConfig.generator.monolith.active) {
     /* CRAER LOS DIRECTORIOS */
     creatorDirectories(monolithWD);
     /* GENERAR LOS MODELOS */
@@ -110,13 +121,13 @@ const main = async () => {
       securityPath =
         securityPath +
         `"/${entity}/findall": [${securityRoles}],\n
-        "/${entity}/find": [${securityRoles}],\n
-        "/${entity}/create": [${securityRoles}],\n
-        "/${entity}/save": [${securityRoles}],\n
-        "/${entity}/createall": [${securityRoles}],\n
-        "/${entity}/saveall": [${securityRoles}],\n
-        "/${entity}/delete": [${securityRoles}],\n
-        `;
+          "/${entity}/find": [${securityRoles}],\n
+          "/${entity}/create": [${securityRoles}],\n
+          "/${entity}/save": [${securityRoles}],\n
+          "/${entity}/createall": [${securityRoles}],\n
+          "/${entity}/saveall": [${securityRoles}],\n
+          "/${entity}/delete": [${securityRoles}],\n
+          `;
       /* OBTENEMOS METADATA */
       let metadata = conn.getMetadata(entity);
       let configurationService: Array<TemplateDto> = [];
@@ -247,12 +258,14 @@ const main = async () => {
           "logger",
           "ts",
         ),
-        new CopyTemplateDto(
-          `${baseTemplates}/SecurityMiddleware.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/middleware`,
-          "security",
-          "ts",
-        ),
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/SecurityMiddleware.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/middleware`,
+              "security",
+              "ts",
+            )
+          : null,
         new CopyTemplateDto(
           `${baseTemplates}/iControllerBase.txt`,
           `./${enviromentConfig.generator.proyectName}/src/framework`,
@@ -271,53 +284,70 @@ const main = async () => {
           "tsconfig",
           "json",
         ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/dto/SignInDto.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business/dto`,
-          "SignInDto",
-          "ts",
-        ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/dto/TokenDataDto.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business/dto`,
-          "TokenDataDto",
-          "ts",
-        ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/dto/SignUpDto.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business/dto`,
-          "SignUpDto",
-          "ts",
-        ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/security/SecurityRest.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business/security`,
-          "SecurityRest",
-          "ts",
-        ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/security/SecurityService.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business/security`,
-          "SecurityService",
-          "ts",
-        ),
-        new CopyTemplateDto(
-          `${baseTemplates}/business/businessroutes.txt`,
-          `./${enviromentConfig.generator.proyectName}/src/business`,
-          "businessroutes",
-          "ts",
-        ),
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/dto/SignInDto.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business/dto`,
+              "SignInDto",
+              "ts",
+            )
+          : null,
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/dto/TokenDataDto.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business/dto`,
+              "TokenDataDto",
+              "ts",
+            )
+          : null,
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/dto/SignUpDto.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business/dto`,
+              "SignUpDto",
+              "ts",
+            )
+          : null,
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/security/SecurityRest.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business/security`,
+              "SecurityRest",
+              "ts",
+            )
+          : null,
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/security/SecurityService.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business/security`,
+              "SecurityService",
+              "ts",
+            )
+          : null,
+        enviromentConfig.generator.monolith.security
+          ? new CopyTemplateDto(
+              `${baseTemplates}/business/businessroutesSecurity.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business`,
+              "businessroutes",
+              "ts",
+            )
+          : new CopyTemplateDto(
+              `${baseTemplates}/business/businessroutes.txt`,
+              `./${enviromentConfig.generator.proyectName}/src/business`,
+              "businessroutes",
+              "ts",
+            ),
       ];
       copyTemplate(utilFilesArr);
       //GENERATE IMPORTS AND EXPORTS
       importer =
         importer +
         `import { ${entity}Repository } from "./repository/${entity}Repository";\n
-         import { ${entity}Service } from "./service/${entity}Service";\n`;
+           import { ${entity}Service } from "./service/${entity}Service";\n`;
       exporter =
         exporter +
         `${entity}Repository: ${entity}Repository, \n
-        ${entity}Service:${entity}Service,`;
+          ${entity}Service:${entity}Service,`;
     }
     let exporterTemplate = creatorExporterTemplate(
       `${baseTemplates}/exporter.txt`,
@@ -325,40 +355,58 @@ const main = async () => {
       exporter,
       `./${enviromentConfig.generator.proyectName}/src`,
     );
-    creatoServer(
-      `${baseTemplates}/server.txt`,
-      `./${enviromentConfig.generator.proyectName}/src`,
-      arrImportRest,
-      arrInstanceRest,
-      "server",
-    );
-    creatorSecurityPath(
-      `${baseTemplates}/SecurityPaths.txt`,
-      `./${enviromentConfig.generator.proyectName}/src`,
-      securityPath,
-      "securitypath",
-    );
-    conn.close();
-  }
-
-  if (enviromentConfig.generator.lambda.active) {
-    //GENERATE LAMBDAS
-    let baseTemplates = "./src/templates/lambda/files";
-    /* GENERAR LOS MODELOS */
-    let entityPath: string = `./${enviromentConfig.generator.proyectName}/src/entity`;
-    let files: Array<string> = readFolderContent(entityPath);
-    var configuration = enviroment.dbconfig;
-    configuration.entities = ["/opt/dist/entity/**/*.js"];
-    for (let i = 0; i < files.length; i++) {
-      let entity: string = files[i].split(".ts")[0];
-      creatorLambdas(
-        `${baseTemplates}/index.txt`,
-        `./${enviromentConfig.generator.proyectName}_lambdas`,
-        entity,
-        configuration,
+    enviromentConfig.generator.monolith.security
+      ? creatoServer(
+          `${baseTemplates}/serverSecurity.txt`,
+          `./${enviromentConfig.generator.proyectName}/src`,
+          arrImportRest,
+          arrInstanceRest,
+          "server",
+        )
+      : creatoServer(
+          `${baseTemplates}/server.txt`,
+          `./${enviromentConfig.generator.proyectName}/src`,
+          arrImportRest,
+          arrInstanceRest,
+          "server",
+        );
+    if (enviromentConfig.generator.monolith.security) {
+      creatorSecurityPath(
+        `${baseTemplates}/SecurityPaths.txt`,
+        `./${enviromentConfig.generator.proyectName}/src`,
+        securityPath,
+        "securitypath",
       );
     }
+
+    conn.close();
+    //}
+
+    if (enviromentConfig.generator.lambda) {
+      //GENERATE LAMBDAS
+      let baseTemplates = "./src/templates/lambda/files";
+      /* GENERAR LOS MODELOS */
+      let entityPath: string = `./${enviromentConfig.generator.proyectName}/src/entity`;
+      let files: Array<string> = readFolderContent(entityPath);
+      var configuration = enviroment.dbconfig;
+      configuration.entities = ["/opt/dist/entity/**/*.js"];
+      for (let i = 0; i < files.length; i++) {
+        let entity: string = files[i].split(".ts")[0];
+        creatorLambdas(
+          `${baseTemplates}/index.txt`,
+          `./${enviromentConfig.generator.proyectName}_lambdas`,
+          entity,
+          configuration,
+        );
+      }
+    }
+  } else {
+    throw Error("No enviroment send");
   }
 };
-
-main();
+export default main;
+if (env) {
+  main(env);
+} else {
+  console.error(`No profile found: ${profile}`);
+}
