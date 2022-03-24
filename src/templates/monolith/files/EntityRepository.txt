@@ -1,5 +1,0 @@
-import { EntityRepository, Repository } from "typeorm";
-import { %ENTITY_NAME% } from "../entity/%ENTITY_NAME%";
-
-@EntityRepository(%ENTITY_NAME%)
-export class %ENTITY_NAME%Repository extends Repository<%ENTITY_NAME%> {}
