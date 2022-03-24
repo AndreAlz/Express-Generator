@@ -1,0 +1,14 @@
+NESTED_NAME:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: 
+      - ApiRest
+      - LambdaFunctionRole
+      - LambdaLayer
+    Properties:
+      TemplateURL: "https://BUCKET_NAME.s3.amazonaws.com/BUCKET_FILE.yaml"
+      Parameters:
+        ENVIR: !Ref ENV
+        AG: !Ref ApiRest
+        AGR: !GetAtt [ApiRest, RootResourceId]
+        LR: !GetAtt [LambdaFunctionRole, Arn]
+        LL: !Ref LambdaLayer

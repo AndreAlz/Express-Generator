@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace",
+    "path": "/authorizationType",
+    "value": "COGNITO_USER_POOLS"
+  },
+  {
+    "op": "replace",
+    "path": "/authorizerId",
+    "value": "nnl8o1"
+  }
+]

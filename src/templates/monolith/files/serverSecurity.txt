@@ -1,0 +1,59 @@
+import App from "./app";
+import enviromentConfig from "./config";
+
+import * as bodyParser from "body-parser";
+import loggerMiddleware from "./middleware/logger";
+import securityMiddleware from "./middleware/security";
+
+import "reflect-metadata";
+import { createConnection } from "typeorm";
+
+import { BUSINESS_ROUTES } from "./business/businessroutes";
+%REST_IMPORTS%
+
+let argv = require("minimist")(process.argv.slice(2));
+let profile = enviromentConfig.activeprofile;
+if (argv.env) {
+  profile = argv.env;
+}
+
+const config = enviromentConfig[profile];
+var flagBuild: boolean = __dirname.includes("src");
+var stringEntities = flagBuild ? "src/entity/**/*.ts" : "dist/entity/**/*.js";
+config.dbconfig.entities = [stringEntities];
+console.log(`CURRENT CONFIGURATION IS ${profile.toUpperCase()}`);
+console.log("/**************************/");
+console.log(config);
+
+createConnection(config.dbconfig)
+  .then(async (connection) => {
+    console.log("/CONNECTION SUCCESS/");
+    let rest: Array<any> = [
+     %REST_INSTANCES%
+    ];
+    BUSINESS_ROUTES.forEach((r) => {
+      rest.push(new r());
+    });
+    const app = new App({
+      port: parseInt(process.env.PORT) || 5000,
+      controllers: rest,
+      middleWares: [
+        bodyParser.json(),
+        bodyParser.urlencoded({ extended: true }),
+        loggerMiddleware,
+        securityMiddleware.pathSecureValidatorMiddleware,
+        securityMiddleware.tokenValidatorMiddleware,
+        securityMiddleware.roleValidatorMiddleware,
+      ],
+      jobs: [],
+    });
+    app.listen();
+    console.log("/**************************/");
+  })
+  .catch((error) => {
+    console.log("/**************************/");
+    console.log("/CONNECTION ERROR/");
+    console.log("/--------INFO--------/");
+    console.log(error);
+    console.log("/**************************/");
+  });

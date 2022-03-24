@@ -1,0 +1,54 @@
+import * as express from "express";
+import { Request, Response } from "express";
+import IControllerBase from "../../framework/IControllerBase.interface";
+
+import { SecurityService } from "./SecurityService";
+class SecurityRest implements IControllerBase {
+  public service = new SecurityService();
+  public path = "/";
+  public router = express.Router();
+  constructor() {
+    this.initRoutes();
+  }
+
+  public initRoutes() {
+    this.router.post("/Security/signUp", this.signUp);
+    this.router.post("/Security/signIn", this.signIn);
+  }
+
+  signUp = async (req: Request, res: Response) => {
+    try {
+      this.service
+        .signUp(req.body)
+        .then((payload) => {
+          res.status(201).json({ data: payload });
+        })
+        .catch((e) => {
+          res.status(500).json({ error: e.message });
+        });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  };
+
+  signIn = async (req: Request, res: Response) => {
+    try {
+      this.service
+        .signIn(req.body)
+        .then((payload) => {
+          if (payload === null) {
+            res.status(200).json({ mensaje: "Credenciales incorrectas" });
+          } else {
+            res.status(200).json({ data: payload });
+          }
+        })
+        .catch((e) => {
+          res.status(500).json({ error: e.message });
+        });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  };
+}
+
+export default SecurityRest;

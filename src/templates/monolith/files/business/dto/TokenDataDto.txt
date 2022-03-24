@@ -1,0 +1,63 @@
+import { Roles } from "../../entity/Roles";
+
+export class TokenDataDto {
+  private _id_persona: any;
+  private _id_usuario: any;
+  public _roles: Array<Roles>;
+
+  constructor(id_persona: any, id_usuario: any, roles: Array<Roles>) {
+    this._id_persona = id_persona;
+    this._id_usuario = id_usuario;
+    this._roles = roles;
+  }
+
+
+    /**
+     * Getter id_persona
+     * @return {any}
+     */
+	public get id_persona(): any {
+		return this._id_persona;
+	}
+
+    /**
+     * Getter id_usuario
+     * @return {any}
+     */
+	public get id_usuario(): any {
+		return this._id_usuario;
+	}
+  
+
+  /**
+   * Getter roles
+   * @return {Array<Roles>}
+   */
+  public get roles(): Array<Roles> {
+    return this._roles;
+  }
+
+  /**
+   * Setter id_persona
+   * @param {string} value
+   */
+  public set id_persona(value: string) {
+    this._id_persona = value;
+  }
+
+  /**
+   * Setter id_usuario
+   * @param {string} value
+   */
+  public set id_usuario(value: string) {
+    this._id_usuario = value;
+  }
+
+  /**
+   * Setter roles
+   * @param {Array<Roles>} value
+   */
+  public set roles(value: Array<Roles>) {
+    this._roles = value;
+  }
+}

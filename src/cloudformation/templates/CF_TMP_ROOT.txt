@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Nested Stack Template
+Parameters:
+  ENV:
+    Type: String
+    Default: lab
+    Description: Enviroment to deploy stack
+Resources:
+  ApiRest:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: PROYECT_NAME
+      FailOnWarnings: true
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: PROYECT_NAME
+      AssumeRolePolicyDocument:
+        Statement:
+        -
+          Effect: Allow
+          Principal:
+            Service:
+              - "lambda.amazonaws.com"
+          Action:
+          - "sts:AssumeRole"
+      Policies:
+        - PolicyName: PROYECT_NAME
+          PolicyDocument:
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - lambda:*
+                Resource: "*"
+              -
+                Effect: Allow
+                Action:
+                  - cloudwatch:*
+                Resource: "*"
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              -
+                Effect: Allow
+                Action:
+                  - xray:PutTelemetryRecords
+                  - xray:PutTraceSegments
+                Resource: "*"
+              -
+                Effect: Allow
+                Action:
+                  - ec2:*
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                Resource: "*"
+  LambdaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: LAYERNAME
+      CompatibleRuntimes: 
+        - nodejs14.x
+      Content:
+        S3Bucket: BUCKET_NAME
+        S3Key: BUCKET_FILE_KEY 
+  TOTAL_NESTED
+  ApiGatewayDeployment:
+      Type: "AWS::ApiGateway::Deployment"
+      DependsOn: 
+        DEPENDESON
+      Properties:
+        RestApiId: !Ref ApiRest
+        StageName: STAGE_NAME
+Outputs:
+  RootUrl:
+    Value: !Sub https://${ApiRest}.execute-api.${AWS::Region}.amazonaws.com/PROYECT_NAME/

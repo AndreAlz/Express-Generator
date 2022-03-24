@@ -1,0 +1,99 @@
+import * as express from "express";
+import { Request, Response } from "express";
+import IControllerBase from "../framework/IControllerBase.interface";
+import { getCustomRepository } from "typeorm";
+
+import { %ENTITY_NAME%Repository } from "../repository/%ENTITY_NAME%Repository";
+import { %ENTITY_NAME%Service } from "../service/%ENTITY_NAME%Service";
+import { %ENTITY_NAME% } from "../entity/%ENTITY_NAME%";
+
+class %ENTITY_NAME%Rest implements IControllerBase {
+    public service = new %ENTITY_NAME%Service();
+    public repository = getCustomRepository(%ENTITY_NAME%Repository);
+    public path = "/";
+    public router = express.Router();
+
+    constructor() {
+        this.initRoutes();
+    }
+
+    public initRoutes() {
+        this.router.get("/%ENTITY_NAME%/findall", this.findall);
+        this.router.post("/%ENTITY_NAME%/find", this.find);
+        this.router.post("/%ENTITY_NAME%/create", this.create);
+        this.router.post("/%ENTITY_NAME%/save", this.save);
+        this.router.post("/%ENTITY_NAME%/createall", this.createall);
+        this.router.post("/%ENTITY_NAME%/saveall", this.saveall);
+        this.router.delete("/%ENTITY_NAME%/delete", this.delete);
+    }
+
+    findall = async (req: Request, res: Response) => {
+        try {
+            var result = await this.service.findall();
+            res.status(200).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+
+    find = async (req: Request, res: Response) => {
+        try {
+            var body: any = req.body;
+            var result = await this.service.find(body);
+            res.status(200).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+
+    create = async (req: Request, res: Response) => {
+        try {
+            var body: %ENTITY_NAME% = req.body;
+            var result = await this.service.create(body);
+            res.status(201).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+    createall = async (req: Request, res: Response) => {
+        try {
+            var body: Array<%ENTITY_NAME%> = req.body;
+            var result = await this.service.createall(body);
+            res.status(201).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+
+    save = async (req: Request, res: Response) => {
+        try {
+            var body: %ENTITY_NAME% = req.body;
+            var result = await this.service.save(body);
+            res.status(200).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+
+    saveall = async (req: Request, res: Response) => {
+        try {
+            var body: Array<%ENTITY_NAME%> = req.body;
+            var result = await this.service.saveall(body);
+            res.status(200).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+
+    delete = async (req: Request, res: Response) => {
+        try {
+            var body: any = req.body;
+            var result = await this.service.delete(body.id);
+            res.status(200).json({ data: result });
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    };
+}
+
+export default %ENTITY_NAME%Rest;
